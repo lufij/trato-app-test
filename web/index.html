@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!--
+    If you are serving your web app in a path other than the root, change the
+    href value below to reflect the base path you are serving from.
+
+    The path provided below has to start and end with a slash "/" in order for
+    it to work correctly.
+
+    For more details:
+    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+
+    This is a placeholder for base href that will be replaced by the value of
+    the `--base-href` argument provided to `flutter build`.
+  -->
+  <base href="/">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TRATO - Red Social de Negocios">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="TRATO">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png"/>
+
+  <title>TRATO - Red Social de Negocios</title>
+  <link rel="manifest" href="manifest.json">
+
+  <style>
+    /* This is the styling for the loading indicator */
+    .loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f5f5f5;
+    }
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #3498db;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 2s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+
+  <!-- Google Sign-In -->
+  <script src="https://apis.google.com/js/platform.js" async defer></script>
+  <meta name="google-signin-client_id" content="545068027091-trato-app-2668d.apps.googleusercontent.com">
+
+  <!-- Facebook SDK -->
+  <script async defer crossorigin="anonymous" src="https://connect.facebook.net/es_ES/sdk.js"></script>
+
+  <script>
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCMdzXfgYFkCW6PeDaKMKUwhJEI1ikn1Ag",
+      authDomain: "trato-app-2668d.firebaseapp.com",
+      projectId: "trato-app-2668d",
+      storageBucket: "trato-app-2668d.appspot.com",
+      messagingSenderId: "545068027091",
+      appId: "1:545068027091:web:64e930919f633871285826"
+    };
+    
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+
+    // Initialize Facebook SDK
+    window.fbAsyncInit = function() {
+      FB.init({
+        appId: 'YOUR_FACEBOOK_APP_ID', // Reemplaza con tu Facebook App ID
+        cookie: true,
+        xfbml: true,
+        version: 'v18.0'
+      });
+    };
+  </script>
+</head>
+<body>
+  <!-- Loading indicator -->
+  <div id="loading" class="loading">
+    <div class="spinner"></div>
+  </div>
+
+  <script>
+    {{flutter_js}}
+    {{flutter_build_config}}
+    
+    window.addEventListener('load', function(ev) {
+      // Hide loading indicator when app starts
+      function hideLoadingIndicator() {
+        const loading = document.getElementById('loading');
+        if (loading) {
+          loading.style.display = 'none';
+        }
+      }
+
+      // Download main.dart.js
+      _flutter.loader.load().then(function(engineInitializer) {
+        return engineInitializer.initializeEngine();
+      }).then(function(appRunner) {
+        hideLoadingIndicator();
+        return appRunner.runApp();
+      }).catch(function(error) {
+        console.error('Error loading Flutter app:', error);
+        hideLoadingIndicator();
+      });
+    });
+  </script>
+</body>
+</html>
