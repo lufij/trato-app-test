@@ -12,6 +12,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Show current directory
+        run: |
+          pwd
+          ls -la
+        working-directory: ${{ github.workspace }}
+
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -19,9 +25,11 @@ jobs:
 
       - name: Install dependencies
         run: flutter pub get
+        working-directory: ${{ github.workspace }}
 
       - name: Build web
         run: flutter build web --release
+        working-directory: ${{ github.workspace }}
 
       - name: Deploy to Firebase Hosting
         uses: FirebaseExtended/action-hosting-deploy@v0
