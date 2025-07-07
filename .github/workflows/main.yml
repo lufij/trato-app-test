@@ -19,9 +19,11 @@ jobs:
 
       - name: Install dependencies
         run: flutter pub get
+        working-directory: ./
 
       - name: Build web
         run: flutter build web --release
+        working-directory: ./
 
       - name: Deploy to Firebase Hosting
         uses: FirebaseExtended/action-hosting-deploy@v0
@@ -32,3 +34,4 @@ jobs:
           projectId: 'trato-app-test'
         env:
           FIREBASE_CLI_EXPERIMENTS: webframeworks
+        working-directory: ./
