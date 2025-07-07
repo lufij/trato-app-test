@@ -77,3 +77,4 @@ coverage/
 *.bak
 
 .vercel
+node_modules

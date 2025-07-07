@@ -63,6 +63,36 @@ class UserModel {
       'createdAt': createdAt.toIso8601String(),
     };
   }
+
+  UserModel copyWith({
+    String? id,
+    String? email,
+    String? name,
+    String? company,
+    UserType? userType,
+    String? profileImage,
+    String? phone,
+    String? location,
+    String? description,
+    bool? isVerified,
+    double? trustScore,
+    DateTime? createdAt,
+  }) {
+    return UserModel(
+      id: id ?? this.id,
+      email: email ?? this.email,
+      name: name ?? this.name,
+      company: company ?? this.company,
+      userType: userType ?? this.userType,
+      profileImage: profileImage ?? this.profileImage,
+      phone: phone ?? this.phone,
+      location: location ?? this.location,
+      description: description ?? this.description,
+      isVerified: isVerified ?? this.isVerified,
+      trustScore: trustScore ?? this.trustScore,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
 }
 
 enum UserType {

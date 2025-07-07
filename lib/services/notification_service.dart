@@ -214,4 +214,28 @@ class NotificationService {
       }
     });
   }
+
+  // Notificar interés de trato (handshake)
+  void notifyHandshake({
+    required String toUserId,
+    required String fromUserName,
+    required String postTitle,
+    required String postId,
+  }) {
+    final notification = NotificationModel(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      title: '¡Quieren hacer trato contigo!',
+      message: '$fromUserName está interesado en tu publicación: "$postTitle"',
+      type: NotificationType.productInterest,
+      timestamp: DateTime.now(),
+      userId: toUserId,
+      relatedId: postId,
+      data: {
+        'fromUserName': fromUserName,
+        'postTitle': postTitle,
+        'postId': postId,
+      },
+    );
+    addNotification(notification);
+  }
 }

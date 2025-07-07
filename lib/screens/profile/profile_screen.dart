@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import '../../theme/app_theme.dart';
 import '../../services/auth_service.dart';
 import '../../services/company_service.dart';
@@ -18,21 +17,28 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   final AuthService _authService = AuthService();
   final CompanyService _companyService = CompanyService();
-  User? _currentUser;
+  UserModel? _currentUser;
   CompanyModel? _company;
   bool _isLoadingCompany = true;
 
   @override
   void initState() {
     super.initState();
-    _currentUser = FirebaseAuth.instance.currentUser;
+    _loadUser();
+  }
+
+  Future<void> _loadUser() async {
+    final user = await _authService.user.first;
+    setState(() {
+      _currentUser = user;
+    });
     _loadCompanyInfo();
   }
 
   Future<void> _loadCompanyInfo() async {
     if (_currentUser != null) {
       try {
-        final company = await _companyService.getCompanyByOwnerId(_currentUser!.uid);
+        final company = await _companyService.getCompanyByOwnerId(_currentUser!.id);
         setState(() {
           _company = company;
           _isLoadingCompany = false;
@@ -172,7 +178,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             
             // Nombre y empresa
             Text(
-              _currentUser?.displayName ?? 'Usuario TRATO',
+              _currentUser?.name ?? 'Usuario TRATO',
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 24,
@@ -422,7 +428,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   String _getInitials() {
-    final name = _currentUser?.displayName ?? 'Usuario TRATO';
+    final name = _currentUser?.name ?? 'Usuario TRATO';
     final words = name.split(' ');
     if (words.length >= 2) {
       return '${words[0][0]}${words[1][0]}'.toUpperCase();

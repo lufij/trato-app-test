@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/cart_model.dart';
 import '../services/cart_service.dart';
 import '../services/product_service.dart';

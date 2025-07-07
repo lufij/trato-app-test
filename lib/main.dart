@@ -1,43 +1,44 @@
-import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'firebase_options.dart';
 import 'theme/app_theme.dart';
 import 'screens/auth/register_screen.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/main_navigation.dart';
+import 'screens/main_navigation_screen.dart';
+import 'models/user_model.dart';
+import 'services/local_database_service.dart';
+import 'services/persistence_mode.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
   await Firebase.initializeApp(
-    options: const FirebaseOptions(
-      apiKey: "AIzaSyCMdzXfgYFkCW6PeDaKMKUwhJEI1ikn1Ag",
-      appId: "1:545068027091:web:64e930919f633871285826",
-      messagingSenderId: "545068027091",
-      projectId: "trato-app-2668d",
-      authDomain: "trato-app-2668d.firebaseapp.com",
-      storageBucket: "trato-app-2668d.appspot.com",
-    ),
+    options: DefaultFirebaseOptions.currentPlatform,
   );
-  
-  runApp(const MyApp());
+  await LocalDatabaseService.init();
+  // Detectar modo de persistencia solo una vez
+  try {
+    await FirebaseFirestore.instance.collection('posts').limit(1).get();
+    PersistenceConfig.mode = PersistenceMode.firebase;
+    print('Modo de persistencia: Firebase');
+  } catch (e) {
+    PersistenceConfig.mode = PersistenceMode.local;
+    print('Modo de persistencia: Local. Error: ' + e.toString());
+  }
+  runApp(const TratoApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class TratoApp extends StatelessWidget {
+  const TratoApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'TRATO - Red Social de Negocios',
-      theme: AppTheme.lightTheme,
       debugShowCheckedModeBanner: false,
-      home: const AuthWrapper(),
-      routes: {
-        '/register': (context) => const RegisterScreen(),
-        '/login': (context) => const LoginScreen(),
-        '/main': (context) => const MainNavigation(),
-      },
+      title: 'TRATO',
+      theme: AppTheme.lightTheme,
+      home: const MainNavigationScreen(),
     );
   }
 }
@@ -47,8 +48,8 @@ class AuthWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<User?>(
-      stream: FirebaseAuth.instance.authStateChanges(),
+    return StreamBuilder<UserModel?>(
+      stream: null, // Aquí va tu stream de usuarios
       builder: (context, snapshot) {
         // Mientras se verifica el estado de autenticación
         if (snapshot.connectionState == ConnectionState.waiting) {

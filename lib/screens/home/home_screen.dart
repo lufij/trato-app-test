@@ -3,6 +3,12 @@ import '../../theme/app_theme.dart';
 import '../../models/user_model.dart';
 import '../../services/notification_service.dart';
 import '../notifications/notifications_screen.dart';
+import '../../services/post_service.dart';
+import '../../models/post_model.dart';
+import '../create_post_screen.dart';
+import '../../services/local_database_service.dart';
+import '../chat/chat_screen.dart';
+import '../chat/chat_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -13,12 +19,30 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final NotificationService _notificationService = NotificationService();
+  final PostService _postService = PostService();
+  List<PostModel> _posts = [];
+  bool _isLoadingPosts = true;
 
   @override
   void initState() {
     super.initState();
     _notificationService.initialize();
     _notificationService.simulateActivity();
+    _loadPosts();
+  }
+
+
+  void _likePost(PostModel post) {
+    setState(() {
+      post.likesCount += 1;
+    });
+    _postService.likePost(post.id!, false);
+  }
+
+  Future<void> _loadPosts() async {
+    setState(() => _isLoadingPosts = true);
+    _posts = await _postService.getRecentPosts();
+    setState(() => _isLoadingPosts = false);
   }
 
   @override
@@ -90,23 +114,36 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       body: RefreshIndicator(
-        onRefresh: () async {
-          // TODO: Recargar feed
-        },
-        child: ListView.builder(
-          padding: const EdgeInsets.all(16),
-          itemCount: 10, // Ejemplo
-          itemBuilder: (context, index) {
-            if (index == 0) {
-              return _buildStorySection();
-            }
-            return _buildPostCard(index);
-          },
-        ),
+        onRefresh: _loadPosts,
+        child: _isLoadingPosts
+            ? const Center(child: CircularProgressIndicator())
+            : _posts.isEmpty
+                ? const Center(child: Text('No hay publicaciones aún.'))
+                : ListView.builder(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: _posts.length,
+                    itemBuilder: (context, index) {
+                      if (index == 0) {
+                        return Column(
+                          children: [
+                            _buildStorySection(),
+                            _buildPostCard(_posts[index]),
+                          ],
+                        );
+                      }
+                      return _buildPostCard(_posts[index]);
+                    },
+                  ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          // TODO: Crear nueva publicación
+        onPressed: () async {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const CreatePostScreen()),
+          );
+          if (result == true) {
+            _loadPosts();
+          }
         },
         backgroundColor: AppTheme.accentOrange,
         foregroundColor: Colors.white,
@@ -223,185 +260,192 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildPostCard(int index) {
-    final userTypes = UserType.values;
-    final userType = userTypes[index % userTypes.length];
-
+  Widget _buildPostCard(PostModel post) {
     return Card(
-      margin: const EdgeInsets.only(bottom: 16),
-      elevation: 4,
+      margin: const EdgeInsets.only(bottom: 24),
+      elevation: 6,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),
+      clipBehavior: Clip.antiAlias, // Para que la imagen respete los bordes redondeados
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Encabezado
-          ListTile(
-            leading: Stack(
-              children: [
-                CircleAvatar(
-                  backgroundColor: AppTheme.primaryBlue,
-                  child: Text(
-                    'U$index',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                    ),
+          // --- Sección de la Imagen ---
+          if (post.imageUrls.isNotEmpty)
+            post.imageUrls.first.startsWith('http')
+                ? Image.network(
+                    post.imageUrls.first,
+                    height: 220,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return Container(
+                        height: 220,
+                        color: AppTheme.lightGray,
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            value: loadingProgress.expectedTotalBytes != null
+                                ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                                : null,
+                          ),
+                        ),
+                      );
+                    },
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        height: 220,
+                        color: AppTheme.lightGray,
+                        child: const Icon(Icons.broken_image, color: AppTheme.elegantGray, size: 50),
+                      );
+                    },
+                  )
+                : Image.memory(
+                    Uri.parse(post.imageUrls.first).data!.contentAsBytes(),
+                    height: 220,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
                   ),
-                ),
-                if (index % 3 == 0)
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: Container(
-                      padding: const EdgeInsets.all(2),
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        Icons.verified,
-                        color: AppTheme.trustGreen,
-                        size: 12,
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-            title: Row(
-              children: [
-                Text(
-                  'Usuario $index',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: _getUserTypeColor(userType).withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    userType.displayName,
-                    style: TextStyle(
-                      color: _getUserTypeColor(userType),
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            subtitle: Text('Empresa $index S.A.'),
-            trailing: IconButton(
-              icon: const Icon(Icons.more_vert),
-              onPressed: () {
-                // TODO: Mostrar opciones
-              },
-            ),
-          ),
 
-          // Contenido
-          Container(
-            height: 200,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  AppTheme.primaryBlue.withOpacity(0.3),
-                  AppTheme.trustGreen.withOpacity(0.3),
-                ],
+          // --- Sección de Información del Usuario ---
+          ListTile(
+            leading: CircleAvatar(
+              backgroundColor: AppTheme.primaryBlue.withOpacity(0.1),
+              child: Text(
+                post.userDisplayName.isNotEmpty ? post.userDisplayName[0].toUpperCase() : '?',
+                style: const TextStyle(color: AppTheme.primaryBlue, fontWeight: FontWeight.bold),
               ),
             ),
-            child: const Icon(
-              Icons.inventory_2,
-              size: 80,
-              color: Colors.white,
+            title: Text(post.userDisplayName, style: const TextStyle(fontWeight: FontWeight.bold)),
+            subtitle: Text(post.category),
+            trailing: IconButton(
+              icon: const Icon(Icons.more_vert, color: AppTheme.elegantGray),
+              onPressed: () { /* Lógica para más opciones */ },
             ),
           ),
 
-          // Descripción
+          // --- Sección de Detalles del Post ---
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Título de la publicación $index',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
+                  post.title,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Descripción detallada del producto o servicio que se está ofreciendo. '
-                  'Aquí se pueden incluir especificaciones, precios y condiciones.',
-                  style: Theme.of(context).textTheme.bodyMedium,
+                  post.description,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppTheme.darkGray, height: 1.5),
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
                 ),
+                if (post.price != null) ...[
+                  const SizedBox(height: 12),
+                  Text(
+                    'Q ${post.price?.toStringAsFixed(2)}',
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      color: AppTheme.trustGreen,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 8),
               ],
             ),
           ),
 
-          // Acciones
+          // --- Sección de Acciones ---
+          const Divider(height: 1, indent: 16, endIndent: 16),
           Padding(
-            padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildActionButton(
-                  icon: Icons.thumb_up_outlined,
-                  label: '${24 + index}',
-                  onPressed: () {
-                    // TODO: Like
-                  },
+                Row(
+                  children: [
+                    Tooltip(
+                      message: 'Quiero hacer trato',
+                      child: ElevatedButton.icon(
+                        onPressed: () async {
+                          await _postService.incrementHandshakes(post);
+                          setState(() {
+                            post.handshakes += 1;
+                          });
+                          _notificationService.notifyHandshake(
+                            toUserId: post.userId,
+                            fromUserName: post.userDisplayName,
+                            postTitle: post.title,
+                            postId: post.id ?? '',
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Row(
+                                children: const [
+                                  Icon(Icons.handshake, color: Colors.white),
+                                  SizedBox(width: 8),
+                                  Text('¡Solicitud de trato enviada al creador!'),
+                                ],
+                              ),
+                              backgroundColor: AppTheme.primaryBlue,
+                              duration: Duration(seconds: 2),
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.handshake, color: Colors.white),
+                        label: const Text('Hacer Trato'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppTheme.primaryBlue,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          textStyle: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Icon(Icons.handshake, color: AppTheme.primaryBlue),
+                    Text(
+                      post.handshakes.toString(),
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.chat_bubble_outline, color: AppTheme.elegantGray),
+                      onPressed: () { /* Lógica para comentar */ },
+                      tooltip: 'Comentar',
+                    ),
+                  ],
                 ),
-                _buildActionButton(
-                  icon: Icons.comment_outlined,
-                  label: '${12 + index}',
-                  onPressed: () {
-                    // TODO: Comentar
-                  },
-                ),
-                _buildActionButton(
-                  icon: Icons.share_outlined,
-                  label: '${6 + index}',
-                  onPressed: () {
-                    // TODO: Compartir
-                  },
-                ),
-                const Spacer(),
-                OutlinedButton.icon(
-                  onPressed: () {
-                    // TODO: Contactar
-                  },
-                  icon: const Icon(Icons.message),
-                  label: const Text('Contactar'),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: AppTheme.primaryBlue,
-                    side: BorderSide(color: AppTheme.primaryBlue),
+                Padding(
+                  padding: const EdgeInsets.only(right: 8.0),
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ChatScreen(),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.send_rounded, size: 18),
+                    label: const Text('Contactar'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTheme.accentOrange,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
                   ),
                 ),
               ],
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildActionButton({
-    required IconData icon,
-    required String label,
-    required VoidCallback onPressed,
-  }) {
-    return TextButton.icon(
-      onPressed: onPressed,
-      icon: Icon(icon),
-      label: Text(label),
-      style: TextButton.styleFrom(
-        foregroundColor: AppTheme.elegantGray,
       ),
     );
   }

@@ -48,48 +48,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
   }
 
-  Future<void> _signInWithGoogle() async {
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null;
-    });
-    try {
-      final user = await _auth.signInWithGoogle();
-      if (user != null) {
-        Navigator.pushReplacementNamed(context, '/main');
-      }
-    } catch (e) {
-      setState(() {
-        _errorMessage = e.toString().replaceFirst('Exception: ', '');
-      });
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
-
-  Future<void> _signInWithFacebook() async {
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null;
-    });
-    try {
-      final user = await _auth.signInWithFacebook();
-      if (user != null) {
-        Navigator.pushReplacementNamed(context, '/main');
-      }
-    } catch (e) {
-      setState(() {
-        _errorMessage = e.toString().replaceFirst('Exception: ', '');
-      });
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     if (_isRegistered) {
@@ -160,36 +118,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 40),
-            
-            // Botones de autenticación social
-            ElevatedButton.icon(
-              onPressed: _isLoading ? null : _signInWithGoogle,
-              icon: const Icon(Icons.login, color: Colors.white),
-              label: const Text('Continuar con Google'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            
-            ElevatedButton.icon(
-              onPressed: null, // Deshabilitado temporalmente
-              icon: const Icon(Icons.facebook, color: Colors.grey),
-              label: const Text('Facebook (Próximamente)'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.grey[300],
-                foregroundColor: Colors.grey[600],
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-            ),
             
             const SizedBox(height: 30),
             

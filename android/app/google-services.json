@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "545068027091",
+    "project_id": "trato-app-2668d",
+    "storage_bucket": "trato-app-2668d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:545068027091:android:f3c96c8711779bc7285826",
+        "android_client_info": {
+          "package_name": "trato.android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "545068027091-k3sds6sr833jkfhnr56g4mcp87d6keei.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBpYtGM-lUo1e0V3lqW-ww3UqxYxCMbdHQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "545068027091-k3sds6sr833jkfhnr56g4mcp87d6keei.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "545068027091-r1ldusrmj0asf797sgfthrv1cib17ro0.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "trato.ios"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

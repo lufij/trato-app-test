@@ -28,7 +28,7 @@ class _NetworkScreenState extends State<NetworkScreen> with TickerProviderStateM
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Mi Red'),
+        title: const Text('Red de Contactos'),
         backgroundColor: AppTheme.primaryBlue,
         foregroundColor: Colors.white,
         actions: [

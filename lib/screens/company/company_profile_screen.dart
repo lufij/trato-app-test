@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import '../../models/company_model.dart';
 import '../../services/company_service.dart';
 import '../../theme/app_theme.dart';
@@ -42,7 +41,8 @@ class _CompanyProfileScreenState extends State<CompanyProfileScreen>
       if (widget.companyId != null) {
         company = await _companyService.getCompanyById(widget.companyId!);
       } else if (widget.isOwnProfile) {
-        final user = FirebaseAuth.instance.currentUser;
+        // TODO: Reemplazar lógica de usuario autenticado con tu sistema local
+        final user = null; // O usa tu AuthService local
         if (user != null) {
           company = await _companyService.getCompanyByOwnerId(user.uid);
         }

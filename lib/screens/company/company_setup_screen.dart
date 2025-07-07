@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import '../../models/company_model.dart';
 import '../../services/company_service.dart';
 import '../../theme/app_theme.dart';
@@ -394,8 +393,8 @@ class _CompanySetupScreenState extends State<CompanySetupScreen> {
     });
     
     try {
-      final user = FirebaseAuth.instance.currentUser;
-      if (user == null) throw Exception('Usuario no autenticado');
+      // TODO: Reemplazar lógica de usuario autenticado con tu sistema local
+      final user = null; // O usa tu AuthService local
       
       final now = DateTime.now();
       
@@ -431,20 +430,19 @@ class _CompanySetupScreenState extends State<CompanySetupScreen> {
         }
       } else {
         // Actualizar empresa existente
-        final updateData = {
-          'name': _nameController.text.trim(),
-          'description': _descriptionController.text.trim(),
-          'sector': _selectedSector,
-          'location': _locationController.text.trim(),
-          'website': _websiteController.text.trim().isEmpty ? null : _websiteController.text.trim(),
-          'phone': _phoneController.text.trim().isEmpty ? null : _phoneController.text.trim(),
-          'email': _emailController.text.trim().isEmpty ? null : _emailController.text.trim(),
-          'address': _addressController.text.trim().isEmpty ? null : _addressController.text.trim(),
-          'foundedDate': _foundedDate.toIso8601String(),
-          'size': _selectedSize.toString(),
-        };
-        
-        await _companyService.updateCompany(widget.existingCompany!.id, updateData);
+        await _companyService.updateCompany(widget.existingCompany!.copyWith(
+          name: _nameController.text.trim(),
+          description: _descriptionController.text.trim(),
+          location: _locationController.text.trim(),
+          website: _websiteController.text.trim().isEmpty ? null : _websiteController.text.trim(),
+          phone: _phoneController.text.trim().isEmpty ? null : _phoneController.text.trim(),
+          email: _emailController.text.trim().isEmpty ? null : _emailController.text.trim(),
+          address: _addressController.text.trim().isEmpty ? null : _addressController.text.trim(),
+          foundedDate: _foundedDate,
+          size: _selectedSize,
+          sector: _selectedSector,
+          updatedAt: DateTime.now(),
+        ));
         
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(

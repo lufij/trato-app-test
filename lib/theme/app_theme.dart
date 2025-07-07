@@ -2,169 +2,75 @@ import 'package:flutter/material.dart';
 
 class AppTheme {
   // Colores principales de TRATO
-  static const Color primaryBlue = Color(0xFF1565C0);
-  static const Color trustGreen = Color(0xFF2E7D32);
-  static const Color elegantGray = Color(0xFF424242);
-  static const Color lightGray = Color(0xFFF5F5F5);
-  static const Color darkGray = Color(0xFF212121);
-  static const Color accentOrange = Color(0xFFF5A623); // Color del logotipo TRATO
-  static const Color tratoOrange = Color(0xFFF5A623); // Color específico del logotipo
-  static const Color successGreen = Color(0xFF4CAF50);
-  static const Color warningAmber = Color(0xFFFF9800);
-  static const Color errorRed = Color(0xFFE53935);
+  static const Color primaryBlue = Color(0xFF1A73E8);
+  static const Color accentGreen = Color(0xFF34A853);
+  static const Color accentOrange = Color(0xFFFF9800); // Naranja profesional
+  static const Color trustGreen = Color(0xFF43A047); // Verde confianza
+  static const Color elegantGray = Color(0xFF444444);
+  static const Color lightGray = Color(0xFFF5F6FA);
+  static const Color gold = Color(0xFFFFC107);
+  static const Color errorRed = Color(0xFFD32F2F);
+  static const Color successGreen = Color(0xFF43A047);
+  static const Color darkGray = Color(0xFF222222); // Gris oscuro
 
-  static ThemeData get lightTheme {
-    return ThemeData(
-      useMaterial3: true,
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: primaryBlue,
-        brightness: Brightness.light,
-        primary: primaryBlue,
-        secondary: trustGreen,
-        surface: Colors.white,
-        background: lightGray,
-        error: errorRed,
+  static final ThemeData lightTheme = ThemeData(
+    colorScheme: ColorScheme.fromSeed(seedColor: primaryBlue),
+    primaryColor: primaryBlue,
+    scaffoldBackgroundColor: Colors.white,
+    appBarTheme: const AppBarTheme(
+      backgroundColor: primaryBlue,
+      foregroundColor: Colors.white,
+      elevation: 1,
+      iconTheme: IconThemeData(color: Colors.white),
+      titleTextStyle: TextStyle(
+        color: Colors.white,
+        fontWeight: FontWeight.bold,
+        fontSize: 20,
       ),
-      
-      // AppBar Theme
-      appBarTheme: const AppBarTheme(
+    ),
+    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+      backgroundColor: Colors.white,
+      selectedItemColor: primaryBlue,
+      unselectedItemColor: elegantGray,
+      showUnselectedLabels: true,
+      type: BottomNavigationBarType.fixed,
+    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
         backgroundColor: primaryBlue,
         foregroundColor: Colors.white,
-        elevation: 2,
-        centerTitle: true,
-        titleTextStyle: TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.w600,
-          color: Colors.white,
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
       ),
-
-      // Elevated Button Theme
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: primaryBlue,
-          foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          elevation: 2,
-          textStyle: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
-
-      // Outlined Button Theme
-      outlinedButtonTheme: OutlinedButtonThemeData(
-        style: OutlinedButton.styleFrom(
-          foregroundColor: primaryBlue,
-          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          side: const BorderSide(color: primaryBlue, width: 2),
-          textStyle: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
-
-      // Input Decoration Theme
-      inputDecorationTheme: InputDecorationTheme(
-        filled: true,
-        fillColor: Colors.white,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: elegantGray),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey[300]!),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: primaryBlue, width: 2),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: errorRed),
-        ),
-        contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-        labelStyle: const TextStyle(color: elegantGray),
-        hintStyle: TextStyle(color: Colors.grey[500]),
-      ),
-
-      // Card Theme
-      cardTheme: CardThemeData(
-        elevation: 4,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        color: Colors.white,
-      ),
-
-      // Bottom Navigation Bar Theme
-      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-        backgroundColor: Colors.white,
-        selectedItemColor: primaryBlue,
-        unselectedItemColor: elegantGray,
-        type: BottomNavigationBarType.fixed,
-        elevation: 8,
-        selectedLabelStyle: TextStyle(fontWeight: FontWeight.w600),
-      ),
-
-      // Text Theme
-      textTheme: const TextTheme(
-        headlineLarge: TextStyle(
-          fontSize: 32,
-          fontWeight: FontWeight.bold,
-          color: darkGray,
-        ),
-        headlineMedium: TextStyle(
-          fontSize: 28,
-          fontWeight: FontWeight.bold,
-          color: darkGray,
-        ),
-        headlineSmall: TextStyle(
-          fontSize: 24,
-          fontWeight: FontWeight.w600,
-          color: darkGray,
-        ),
-        titleLarge: TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.w600,
-          color: darkGray,
-        ),
-        titleMedium: TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.w500,
-          color: darkGray,
-        ),
-        bodyLarge: TextStyle(
-          fontSize: 16,
-          color: darkGray,
-        ),
-        bodyMedium: TextStyle(
-          fontSize: 14,
-          color: elegantGray,
-        ),
-        bodySmall: TextStyle(
-          fontSize: 12,
-          color: elegantGray,
-        ),
-      ),
-
-      // Floating Action Button Theme
-      floatingActionButtonTheme: const FloatingActionButtonThemeData(
-        backgroundColor: accentOrange,
-        foregroundColor: Colors.white,
-        elevation: 6,
-      ),
-    );
-  }
+    ),
+    inputDecorationTheme: InputDecorationTheme(
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+      filled: true,
+      fillColor: lightGray,
+      labelStyle: const TextStyle(color: elegantGray),
+      helperStyle: const TextStyle(color: elegantGray, fontSize: 12),
+      errorStyle: const TextStyle(color: errorRed),
+    ),
+    chipTheme: ChipThemeData(
+      backgroundColor: lightGray,
+      selectedColor: accentGreen.withOpacity(0.2),
+      labelStyle: const TextStyle(color: elegantGray),
+      secondaryLabelStyle: const TextStyle(color: primaryBlue),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+    ),
+    snackBarTheme: const SnackBarThemeData(
+      backgroundColor: primaryBlue,
+      contentTextStyle: TextStyle(color: Colors.white),
+      behavior: SnackBarBehavior.floating,
+    ),
+    textTheme: const TextTheme(
+      titleLarge: TextStyle(fontWeight: FontWeight.bold, color: elegantGray, fontSize: 22),
+      bodyLarge: TextStyle(color: elegantGray, fontSize: 16),
+      bodyMedium: TextStyle(color: elegantGray, fontSize: 14),
+    ),
+  );
 
   // Gradientes personalizados
   static const LinearGradient primaryGradient = LinearGradient(
@@ -174,7 +80,7 @@ class AppTheme {
   );
 
   static const LinearGradient trustGradient = LinearGradient(
-    colors: [trustGreen, Color(0xFF388E3C)],
+    colors: [accentGreen, Color(0xFF388E3C)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
